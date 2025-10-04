@@ -127,11 +127,52 @@ export interface StructuredCourseDB {
   created_at: string;
 }
 
+export interface StructuredTestScoreDB {
+  id: string;
+  transcript_id: string;
+  test_name: string;
+  score?: string | null;
+  date_taken?: string | null;
+  subject?: string | null;
+  created_at: string;
+}
+
+export interface CreditSummaryDB {
+  id: string;
+  transcript_id: string;
+  total_credits_earned?: number | null;
+  credits_required?: number | null;
+  by_subject?: Record<string, SubjectCredits> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AttendanceSummaryDB {
+  id: string;
+  transcript_id: string;
+  days_present?: number | null;
+  days_absent?: number | null;
+  total_days?: number | null;
+  attendance_rate?: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceHoursDB {
+  id: string;
+  transcript_id: string;
+  earned?: number | null;
+  waived?: number | null;
+  required?: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CombinedStructuredData {
   structured_transcript?: StructuredTranscriptDB | null;
   courses: StructuredCourseDB[];
-  test_scores: any[];
-  credits?: any | null;
-  attendance?: any | null;
-  service_hours?: any | null;
+  test_scores: StructuredTestScoreDB[];
+  credits?: CreditSummaryDB | null;
+  attendance?: AttendanceSummaryDB | null;
+  service_hours?: ServiceHoursDB | null;
 }
