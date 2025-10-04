@@ -199,8 +199,8 @@ export default function StructuredDataDisplay({ data }: StructuredDataDisplayPro
               <Typography variant="h6" gutterBottom color="primary">
                 Service Hours
               </Typography>
-              <Typography><strong>Earned:</strong> {service_hours.hours_earned || 'N/A'}</Typography>
-              <Typography><strong>Required:</strong> {service_hours.hours_required || 'N/A'}</Typography>
+              <Typography><strong>Earned:</strong> {service_hours.earned || 'N/A'}</Typography>
+              <Typography><strong>Required:</strong> {service_hours.required || 'N/A'}</Typography>
             </CardContent>
           </Card>
         )}
