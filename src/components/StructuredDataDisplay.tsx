@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
   Table,
   TableBody,
   TableCell,
@@ -35,67 +34,63 @@ export default function StructuredDataDisplay({ data }: StructuredDataDisplayPro
       </Typography>
 
       {/* Student Info & GPA */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom color="primary">
-                Student Information
-              </Typography>
-              <Box sx={{ display: 'grid', gap: 1 }}>
-                {structured_transcript.student_name && (
-                  <Typography><strong>Name:</strong> {structured_transcript.student_name}</Typography>
-                )}
-                {structured_transcript.student_dob && (
-                  <Typography><strong>Date of Birth:</strong> {structured_transcript.student_dob}</Typography>
-                )}
-                {structured_transcript.student_id && (
-                  <Typography><strong>Student ID:</strong> {structured_transcript.student_id}</Typography>
-                )}
-                {structured_transcript.student_email && (
-                  <Typography><strong>Email:</strong> {structured_transcript.student_email}</Typography>
-                )}
-                {structured_transcript.student_phone && (
-                  <Typography><strong>Phone:</strong> {structured_transcript.student_phone}</Typography>
-                )}
-                {structured_transcript.graduation_date && (
-                  <Typography><strong>Graduation Date:</strong> {structured_transcript.graduation_date}</Typography>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 3 }}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom color="primary">
+              Student Information
+            </Typography>
+            <Box sx={{ display: 'grid', gap: 1 }}>
+              {structured_transcript.student_name && (
+                <Typography><strong>Name:</strong> {structured_transcript.student_name}</Typography>
+              )}
+              {structured_transcript.student_dob && (
+                <Typography><strong>Date of Birth:</strong> {structured_transcript.student_dob}</Typography>
+              )}
+              {structured_transcript.student_id && (
+                <Typography><strong>Student ID:</strong> {structured_transcript.student_id}</Typography>
+              )}
+              {structured_transcript.student_email && (
+                <Typography><strong>Email:</strong> {structured_transcript.student_email}</Typography>
+              )}
+              {structured_transcript.student_phone && (
+                <Typography><strong>Phone:</strong> {structured_transcript.student_phone}</Typography>
+              )}
+              {structured_transcript.graduation_date && (
+                <Typography><strong>Graduation Date:</strong> {structured_transcript.graduation_date}</Typography>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
 
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom color="primary">
-                Academic Performance
-              </Typography>
-              <Box sx={{ display: 'grid', gap: 1 }}>
-                {structured_transcript.gpa_weighted && (
-                  <Typography><strong>Weighted GPA:</strong> {structured_transcript.gpa_weighted}</Typography>
-                )}
-                {structured_transcript.gpa_unweighted && (
-                  <Typography><strong>Unweighted GPA:</strong> {structured_transcript.gpa_unweighted}</Typography>
-                )}
-                {structured_transcript.gpa_scale && (
-                  <Typography><strong>GPA Scale:</strong> {structured_transcript.gpa_scale}</Typography>
-                )}
-                {structured_transcript.class_rank && (
-                  <Typography>
-                    <strong>Class Rank:</strong> {structured_transcript.class_rank}
-                    {structured_transcript.class_total_students && ` of ${structured_transcript.class_total_students}`}
-                  </Typography>
-                )}
-                {structured_transcript.class_percentile && (
-                  <Typography><strong>Percentile:</strong> {structured_transcript.class_percentile}%</Typography>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom color="primary">
+              Academic Performance
+            </Typography>
+            <Box sx={{ display: 'grid', gap: 1 }}>
+              {structured_transcript.gpa_weighted && (
+                <Typography><strong>Weighted GPA:</strong> {structured_transcript.gpa_weighted}</Typography>
+              )}
+              {structured_transcript.gpa_unweighted && (
+                <Typography><strong>Unweighted GPA:</strong> {structured_transcript.gpa_unweighted}</Typography>
+              )}
+              {structured_transcript.gpa_scale && (
+                <Typography><strong>GPA Scale:</strong> {structured_transcript.gpa_scale}</Typography>
+              )}
+              {structured_transcript.class_rank && (
+                <Typography>
+                  <strong>Class Rank:</strong> {structured_transcript.class_rank}
+                  {structured_transcript.class_total_students && ` of ${structured_transcript.class_total_students}`}
+                </Typography>
+              )}
+              {structured_transcript.class_percentile && (
+                <Typography><strong>Percentile:</strong> {structured_transcript.class_percentile}%</Typography>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Courses Table */}
       {courses && courses.length > 0 && (
@@ -170,52 +165,46 @@ export default function StructuredDataDisplay({ data }: StructuredDataDisplayPro
       )}
 
       {/* Credits, Attendance, Service Hours */}
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
         {credits && (
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Credits
-                </Typography>
-                <Typography><strong>Earned:</strong> {credits.total_credits_earned || 'N/A'}</Typography>
-                <Typography><strong>Required:</strong> {credits.credits_required || 'N/A'}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom color="primary">
+                Credits
+              </Typography>
+              <Typography><strong>Earned:</strong> {credits.total_credits_earned || 'N/A'}</Typography>
+              <Typography><strong>Required:</strong> {credits.credits_required || 'N/A'}</Typography>
+            </CardContent>
+          </Card>
         )}
 
         {attendance && (
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Attendance
-                </Typography>
-                <Typography><strong>Present:</strong> {attendance.days_present || 'N/A'} days</Typography>
-                <Typography><strong>Absent:</strong> {attendance.days_absent || 'N/A'} days</Typography>
-                {attendance.attendance_rate && (
-                  <Typography><strong>Rate:</strong> {attendance.attendance_rate}%</Typography>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom color="primary">
+                Attendance
+              </Typography>
+              <Typography><strong>Present:</strong> {attendance.days_present || 'N/A'} days</Typography>
+              <Typography><strong>Absent:</strong> {attendance.days_absent || 'N/A'} days</Typography>
+              {attendance.attendance_rate && (
+                <Typography><strong>Rate:</strong> {attendance.attendance_rate}%</Typography>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {service_hours && (
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom color="primary">
-                  Service Hours
-                </Typography>
-                <Typography><strong>Earned:</strong> {service_hours.hours_earned || 'N/A'}</Typography>
-                <Typography><strong>Required:</strong> {service_hours.hours_required || 'N/A'}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom color="primary">
+                Service Hours
+              </Typography>
+              <Typography><strong>Earned:</strong> {service_hours.hours_earned || 'N/A'}</Typography>
+              <Typography><strong>Required:</strong> {service_hours.hours_required || 'N/A'}</Typography>
+            </CardContent>
+          </Card>
         )}
-      </Grid>
+      </Box>
 
       {/* School Info */}
       {structured_transcript.school_name && (
