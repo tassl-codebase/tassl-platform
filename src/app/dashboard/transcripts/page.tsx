@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Box,
   Button,
@@ -38,7 +37,6 @@ import StructuredDataDisplay from '@/components/StructuredDataDisplay';
 import type { CombinedStructuredData } from '@/types/structured-transcript';
 
 export default function TranscriptsPage() {
-  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);

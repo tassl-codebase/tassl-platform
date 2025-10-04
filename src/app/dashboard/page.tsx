@@ -15,7 +15,6 @@ import {
   Analytics as AnalyticsIcon,
   TrendingUp as TrendingUpIcon,
   ArrowForward as ArrowForwardIcon,
-  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 
 export default function DashboardPage() {
@@ -28,7 +27,7 @@ export default function DashboardPage() {
       change: '+0%',
       icon: <DescriptionIcon sx={{ fontSize: 28 }} />,
       gradient: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-      bgColor: (theme: any) => alpha(theme.palette.primary.main, 0.1),
+      bgColor: '#eef2ff',
     },
     {
       title: 'Processed',
@@ -36,7 +35,7 @@ export default function DashboardPage() {
       change: '+0%',
       icon: <AnalyticsIcon sx={{ fontSize: 28 }} />,
       gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-      bgColor: (theme: any) => alpha(theme.palette.success.main, 0.1),
+      bgColor: '#ecfdf5',
     },
     {
       title: 'Pending',
@@ -44,7 +43,7 @@ export default function DashboardPage() {
       change: '0%',
       icon: <TrendingUpIcon sx={{ fontSize: 28 }} />,
       gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
-      bgColor: (theme: any) => alpha(theme.palette.warning.main, 0.1),
+      bgColor: '#fffbeb',
     },
   ];
 
@@ -62,7 +61,7 @@ export default function DashboardPage() {
 
       {/* Stats Cards */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3, mb: 5 }}>
-        {stats.map((stat, index) => (
+        {stats.map((stat) => (
           <Card
             key={stat.title}
             sx={{

@@ -14,7 +14,6 @@ import {
   Avatar,
   InputAdornment,
   IconButton,
-  alpha,
 } from '@mui/material';
 import {
   School as SchoolIcon,
