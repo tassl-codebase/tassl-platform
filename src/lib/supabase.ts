@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 
 // For client-side (browser) use anon key
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -11,8 +12,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Client for browser use (with RLS)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Client for browser use (with RLS and proper session handling)
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
 // Admin client for server-side use (bypasses RLS)
 export const supabaseAdmin = supabaseServiceKey
@@ -22,7 +23,7 @@ export const supabaseAdmin = supabaseServiceKey
         persistSession: false,
       },
     })
-  : supabase; // Fallback to regular client if service key not available
+  : createClient(supabaseUrl, supabaseAnonKey); // Fallback to regular client if service key not available
 
 // Storage bucket name
 export const TRANSCRIPTS_BUCKET = 'transcripts';
