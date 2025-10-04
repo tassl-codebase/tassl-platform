@@ -9,6 +9,9 @@ export interface Transcript {
   extraction_status: 'pending' | 'processing' | 'completed' | 'failed';
   extraction_error: string | null;
   extracted_at: string | null;
+  structured: boolean;
+  structured_at: string | null;
+  structure_error: string | null;
   created_at: string;
   updated_at: string;
 }

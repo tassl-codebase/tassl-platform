@@ -20,8 +20,12 @@ import {
   CheckCircle,
   Error as ErrorIcon,
   Pending,
+  ContentCopy,
+  AccountTree,
 } from '@mui/icons-material';
 import type { Transcript } from '@/types/transcript';
+import type { CombinedStructuredData } from '@/types/structured-transcript';
+import StructuredDataDisplay from '@/components/StructuredDataDisplay';
 
 export default function TranscriptViewPage() {
   const params = useParams();
@@ -30,7 +34,10 @@ export default function TranscriptViewPage() {
   const [transcript, setTranscript] = useState<Transcript | null>(null);
   const [loading, setLoading] = useState(true);
   const [extracting, setExtracting] = useState(false);
+  const [structuring, setStructuring] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [structuredData, setStructuredData] = useState<CombinedStructuredData | null>(null);
 
   const fetchTranscript = async () => {
     try {
@@ -73,10 +80,56 @@ export default function TranscriptViewPage() {
     }
   };
 
+  const handleStructure = async () => {
+    setStructuring(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/transcripts/structure/${id}`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Structure extraction failed');
+      }
+
+      // Fetch structured data
+      await fetchStructuredData();
+      // Refresh transcript data
+      await fetchTranscript();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Structuring failed');
+    } finally {
+      setStructuring(false);
+    }
+  };
+
+  const fetchStructuredData = async () => {
+    try {
+      const response = await fetch(`/api/transcripts/structured/${id}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setStructuredData(data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch structured data:', err);
+    }
+  };
+
   useEffect(() => {
     fetchTranscript();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    if (transcript?.structured) {
+      fetchStructuredData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transcript?.structured]);
 
   const getStatusChip = (status: string) => {
     switch (status) {
@@ -199,6 +252,23 @@ export default function TranscriptViewPage() {
           </Box>
         )}
 
+        {/* Structure Button */}
+        {transcript.extraction_status === 'completed' && !transcript.structured && (
+          <Box sx={{ mb: 3 }}>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<AccountTree />}
+              onClick={handleStructure}
+              disabled={structuring}
+              fullWidth
+              color="secondary"
+            >
+              {structuring ? 'Structuring Data...' : 'Extract Structured Data'}
+            </Button>
+          </Box>
+        )}
+
         {/* Processing Indicator */}
         {(extracting || transcript.extraction_status === 'processing') && (
           <Box sx={{ mb: 3 }}>
@@ -209,12 +279,36 @@ export default function TranscriptViewPage() {
           </Box>
         )}
 
+        {/* Structuring Indicator */}
+        {structuring && (
+          <Box sx={{ mb: 3 }}>
+            <LinearProgress color="secondary" />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
+              Structuring transcript data with AI... This may take 10-30 seconds.
+            </Typography>
+          </Box>
+        )}
+
         {/* Extracted Text */}
         {transcript.extracted_text && (
           <Box>
-            <Typography variant="h6" gutterBottom>
-              Extracted Text
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Typography variant="h6">
+                Extracted Text
+              </Typography>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  navigator.clipboard.writeText(transcript.extracted_text || '');
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                startIcon={<ContentCopy />}
+              >
+                {copied ? 'Copied!' : 'Copy Text'}
+              </Button>
+            </Box>
             <Paper
               variant="outlined"
               sx={{
@@ -230,6 +324,11 @@ export default function TranscriptViewPage() {
               {transcript.extracted_text}
             </Paper>
           </Box>
+        )}
+
+        {/* Structured Data Display */}
+        {transcript.structured && structuredData && (
+          <StructuredDataDisplay data={structuredData} />
         )}
       </Paper>
     </Container>
