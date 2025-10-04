@@ -182,8 +182,8 @@ CREATE TABLE IF NOT EXISTS "public"."structured_transcripts" (
     "student_email" "text",
     "student_phone" "text",
     "graduation_date" "text",
-    "gpa_weighted" numeric(4,3),
-    "gpa_unweighted" numeric(4,3),
+    "gpa_weighted" numeric(5,3),
+    "gpa_unweighted" numeric(5,3),
     "gpa_scale" numeric(3,1),
     "class_rank" integer,
     "class_total_students" integer,
@@ -217,11 +217,16 @@ CREATE TABLE IF NOT EXISTS "public"."transcripts" (
     "structured_at" timestamp with time zone,
     "structure_error" "text",
     "user_id" "uuid",
+    "extraction_method" "text",
     CONSTRAINT "transcripts_extraction_status_check" CHECK (("extraction_status" = ANY (ARRAY['pending'::"text", 'processing'::"text", 'completed'::"text", 'failed'::"text"])))
 );
 
 
 ALTER TABLE "public"."transcripts" OWNER TO "postgres";
+
+
+COMMENT ON COLUMN "public"."transcripts"."extraction_method" IS 'Method used to extract text: text_pdf, ocr_image, ocr_scanned_pdf, etc.';
+
 
 
 CREATE TABLE IF NOT EXISTS "public"."users" (

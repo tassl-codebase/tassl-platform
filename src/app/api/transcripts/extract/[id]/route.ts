@@ -54,12 +54,29 @@ export async function POST(
       );
     }
 
+    // Validate extracted text is not empty
+    if (!extractionResult.text || extractionResult.text.trim().length === 0) {
+      await supabaseAdmin
+        .from('transcripts')
+        .update({
+          extraction_status: 'failed',
+          extraction_error: 'Extracted text is empty',
+        })
+        .eq('id', id);
+
+      return NextResponse.json(
+        { success: false, error: 'Extracted text is empty' },
+        { status: 500 }
+      );
+    }
+
     // Save extracted text to database
     const { error: updateError } = await supabaseAdmin
       .from('transcripts')
       .update({
         extracted_text: extractionResult.text,
         page_count: extractionResult.page_count,
+        extraction_method: extractionResult.extraction_method || 'text_pdf',
         extraction_status: 'completed',
         extraction_error: null,
         extracted_at: new Date().toISOString(),
@@ -79,6 +96,7 @@ export async function POST(
       data: {
         text: extractionResult.text,
         page_count: extractionResult.page_count,
+        extraction_method: extractionResult.extraction_method,
       },
     });
   } catch (error) {

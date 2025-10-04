@@ -27,29 +27,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
-    if (file.type !== 'application/pdf') {
+    // Validate file type - accept PDFs and images
+    const allowedTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/tiff',
+      'image/webp'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { success: false, error: 'Only PDF files are allowed' },
+        { success: false, error: 'Only PDF and image files (JPG, PNG, GIF, BMP, TIFF, WebP) are allowed' },
         { status: 400 }
       );
     }
 
-    // Generate unique file path
+    // Generate unique file path with correct extension
     const fileId = uuidv4();
-    const fileExtension = 'pdf';
     const fileName = file.name;
+
+    // Get file extension from the file name or type
+    let fileExtension = 'pdf';
+    if (file.type.startsWith('image/')) {
+      const typeExtension = file.type.split('/')[1];
+      fileExtension = typeExtension === 'jpeg' ? 'jpg' : typeExtension;
+    } else if (fileName.includes('.')) {
+      const ext = fileName.split('.').pop()?.toLowerCase();
+      if (ext) fileExtension = ext;
+    }
+
     const storagePath = `${userId}/${fileId}.${fileExtension}`;
 
     // Convert file to ArrayBuffer then to Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to Supabase Storage
+    // Upload to Supabase Storage with correct content type
     const { error: uploadError } = await supabaseAdmin.storage
       .from(TRANSCRIPTS_BUCKET)
       .upload(storagePath, buffer, {
-        contentType: 'application/pdf',
+        contentType: file.type,
         upsert: false,
       });
 

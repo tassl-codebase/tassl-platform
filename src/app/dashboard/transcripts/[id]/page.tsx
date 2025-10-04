@@ -217,10 +217,42 @@ export default function TranscriptViewPage() {
                 </Typography>
               </>
             )}
+
+            {transcript.extraction_method && (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  Extraction Method:
+                </Typography>
+                <Box>
+                  <Chip
+                    label={
+                      transcript.extraction_method === 'text_pdf'
+                        ? 'Text PDF'
+                        : transcript.extraction_method === 'ocr_image'
+                        ? 'OCR Image'
+                        : transcript.extraction_method === 'ocr_scanned_pdf'
+                        ? 'OCR Scanned PDF'
+                        : transcript.extraction_method.toUpperCase()
+                    }
+                    size="small"
+                    color={transcript.extraction_method.startsWith('ocr') ? 'warning' : 'primary'}
+                    variant="outlined"
+                    sx={{ fontWeight: 600 }}
+                  />
+                </Box>
+              </>
+            )}
           </Box>
         </Box>
 
         <Divider sx={{ my: 3 }} />
+
+        {/* OCR Warning */}
+        {transcript.extraction_method && transcript.extraction_method.startsWith('ocr') && (
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            ⚠️ This transcript was extracted using OCR. Please review manually for accuracy.
+          </Alert>
+        )}
 
         {/* Error Message */}
         {error && (

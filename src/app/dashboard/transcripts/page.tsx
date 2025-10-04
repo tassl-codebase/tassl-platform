@@ -71,8 +71,20 @@ export default function TranscriptsPage() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.type !== 'application/pdf') {
-        setError('Please select a PDF file');
+      // Accept PDFs and common image formats
+      const allowedTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/bmp',
+        'image/tiff',
+        'image/webp'
+      ];
+
+      if (!allowedTypes.includes(selectedFile.type)) {
+        setError('Please select a PDF or image file (JPG, PNG, GIF, BMP, TIFF, WebP)');
         setFile(null);
         return;
       }
@@ -271,7 +283,7 @@ export default function TranscriptsPage() {
 
           <Box sx={{ my: 4 }}>
             <input
-              accept="application/pdf,.pdf"
+              accept="application/pdf,.pdf,image/jpeg,.jpg,.jpeg,image/png,.png,image/gif,.gif,image/bmp,.bmp,image/tiff,.tiff,.tif,image/webp,.webp"
               style={{ display: 'none' }}
               id="file-upload"
               type="file"
@@ -306,12 +318,12 @@ export default function TranscriptsPage() {
                   }}
                 />
                 <Typography variant="h6" fontWeight={600} gutterBottom>
-                  {file ? file.name : 'Choose a PDF file or drag it here'}
+                  {file ? file.name : 'Choose a PDF or image file'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   {file
                     ? `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`
-                    : 'Supported format: PDF (max 50MB)'}
+                    : 'Supported: PDF, JPG, PNG, GIF, BMP, TIFF, WebP (max 50MB)'}
                 </Typography>
                 <Button
                   variant="outlined"
@@ -475,12 +487,42 @@ export default function TranscriptsPage() {
                         <TableCell colSpan={4} sx={{ p: 0, borderBottom: 'none' }}>
                           <Collapse in={expandedId === transcript.id} timeout="auto" unmountOnExit>
                             <Box sx={{ p: 3, backgroundColor: 'grey.50' }}>
+                              {/* OCR Warning */}
+                              {transcript.extraction_method && transcript.extraction_method.startsWith('ocr') && (
+                                <Alert severity="warning" sx={{ mb: 3 }}>
+                                  ⚠️ This transcript was extracted using OCR{' '}
+                                  {transcript.extraction_method === 'ocr_image'
+                                    ? '(Image)'
+                                    : transcript.extraction_method === 'ocr_scanned_pdf'
+                                    ? '(Scanned PDF)'
+                                    : ''}. Please review manually for accuracy.
+                                </Alert>
+                              )}
+
                               {transcript.extracted_text && (
                                 <Box sx={{ mb: 3 }}>
                                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                    <Typography variant="h6" fontWeight={600}>
-                                      Extracted Text
-                                    </Typography>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                      <Typography variant="h6" fontWeight={600}>
+                                        Extracted Text
+                                      </Typography>
+                                      {transcript.extraction_method && (
+                                        <Chip
+                                          label={
+                                            transcript.extraction_method === 'text_pdf'
+                                              ? 'Text PDF'
+                                              : transcript.extraction_method === 'ocr_image'
+                                              ? 'OCR Image'
+                                              : transcript.extraction_method === 'ocr_scanned_pdf'
+                                              ? 'OCR Scanned PDF'
+                                              : transcript.extraction_method.toUpperCase()
+                                          }
+                                          size="small"
+                                          color={transcript.extraction_method.startsWith('ocr') ? 'warning' : 'primary'}
+                                          variant="outlined"
+                                        />
+                                      )}
+                                    </Box>
                                     <Button
                                       size="small"
                                       startIcon={<ContentCopyIcon />}

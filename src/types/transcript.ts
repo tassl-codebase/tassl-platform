@@ -7,6 +7,7 @@ export interface Transcript {
   extracted_text: string | null;
   page_count: number | null;
   extraction_status: 'pending' | 'processing' | 'completed' | 'failed';
+  extraction_method: string | null;
   extraction_error: string | null;
   extracted_at: string | null;
   structured: boolean;

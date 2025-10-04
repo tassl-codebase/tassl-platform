@@ -7,6 +7,7 @@ export interface ExtractResponse {
   text: string | null;
   error: string | null;
   page_count: number | null;
+  extraction_method?: string | null;
 }
 
 export async function extractTextFromSupabase(
@@ -36,7 +37,8 @@ export async function extractTextFromSupabase(
       success: result.success,
       text: result.data?.extracted_text || null,
       error: result.error,
-      page_count: null, // New API doesn't return page_count in extract response
+      page_count: result.data?.page_count || null,
+      extraction_method: result.data?.extraction_method || null,
     };
   } catch (error) {
     return {
