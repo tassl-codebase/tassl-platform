@@ -1,0 +1,237 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  Paper,
+  Alert,
+  CircularProgress,
+  Chip,
+  Divider,
+  LinearProgress,
+} from '@mui/material';
+import {
+  AutoFixHigh,
+  Description,
+  CheckCircle,
+  Error as ErrorIcon,
+  Pending,
+} from '@mui/icons-material';
+import type { Transcript } from '@/types/transcript';
+
+export default function TranscriptViewPage() {
+  const params = useParams();
+  const id = params.id as string;
+
+  const [transcript, setTranscript] = useState<Transcript | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [extracting, setExtracting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTranscript = async () => {
+    try {
+      const response = await fetch(`/api/transcripts/${id}`);
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to fetch transcript');
+      }
+
+      setTranscript(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load transcript');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExtract = async () => {
+    setExtracting(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/transcripts/extract/${id}`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Text extraction failed');
+      }
+
+      // Refresh transcript data
+      await fetchTranscript();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Extraction failed');
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTranscript();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const getStatusChip = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Chip icon={<Pending />} label="Pending" color="default" />;
+      case 'processing':
+        return <Chip icon={<CircularProgress size={16} />} label="Processing" color="info" />;
+      case 'completed':
+        return <Chip icon={<CheckCircle />} label="Completed" color="success" />;
+      case 'failed':
+        return <Chip icon={<ErrorIcon />} label="Failed" color="error" />;
+      default:
+        return <Chip label={status} />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
+        <CircularProgress />
+        <Typography sx={{ mt: 2 }}>Loading transcript...</Typography>
+      </Container>
+    );
+  }
+
+  if (!transcript) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Alert severity="error">Transcript not found</Alert>
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ py: 8 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        {/* Header */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <Description sx={{ fontSize: 40, color: 'primary.main' }} />
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h4" component="h1">
+              {transcript.file_name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Uploaded: {new Date(transcript.created_at).toLocaleString()}
+            </Typography>
+          </Box>
+          {getStatusChip(transcript.extraction_status)}
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Metadata */}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Details
+          </Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              File ID:
+            </Typography>
+            <Typography variant="body2">{transcript.id}</Typography>
+
+            <Typography variant="body2" color="text.secondary">
+              Status:
+            </Typography>
+            <Typography variant="body2">{transcript.extraction_status}</Typography>
+
+            {transcript.page_count && (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  Pages:
+                </Typography>
+                <Typography variant="body2">{transcript.page_count}</Typography>
+              </>
+            )}
+
+            {transcript.extracted_at && (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  Extracted At:
+                </Typography>
+                <Typography variant="body2">
+                  {new Date(transcript.extracted_at).toLocaleString()}
+                </Typography>
+              </>
+            )}
+          </Box>
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Error Message */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
+
+        {/* Extraction Error */}
+        {transcript.extraction_error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            Extraction Error: {transcript.extraction_error}
+          </Alert>
+        )}
+
+        {/* Extract Button */}
+        {transcript.extraction_status === 'pending' && (
+          <Box sx={{ mb: 3 }}>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<AutoFixHigh />}
+              onClick={handleExtract}
+              disabled={extracting}
+              fullWidth
+            >
+              {extracting ? 'Extracting Text...' : 'Extract Text'}
+            </Button>
+          </Box>
+        )}
+
+        {/* Processing Indicator */}
+        {(extracting || transcript.extraction_status === 'processing') && (
+          <Box sx={{ mb: 3 }}>
+            <LinearProgress />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
+              Extracting text from PDF... This may take a few moments.
+            </Typography>
+          </Box>
+        )}
+
+        {/* Extracted Text */}
+        {transcript.extracted_text && (
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Extracted Text
+            </Typography>
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 3,
+                maxHeight: '600px',
+                overflowY: 'auto',
+                bgcolor: 'grey.50',
+                fontFamily: 'monospace',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
+              {transcript.extracted_text}
+            </Paper>
+          </Box>
+        )}
+      </Paper>
+    </Container>
+  );
+}
