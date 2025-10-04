@@ -57,11 +57,19 @@ export async function POST(
 
     // Save structured data to database
     try {
+      // Log GPA values for debugging
+      console.log('GPA values:', {
+        weighted: data.gpa?.weighted,
+        unweighted: data.gpa?.unweighted,
+        scale: data.gpa?.scale
+      });
+
       // 1. Insert structured_transcripts
       const { error: structuredError } = await supabaseAdmin
         .from('structured_transcripts')
         .upsert({
           transcript_id: id,
+          user_id: transcript.user_id,
           student_name: data.student_info.name,
           student_dob: data.student_info.date_of_birth,
           student_address: data.student_info.address,
@@ -79,6 +87,8 @@ export async function POST(
           school_location: data.school_info?.location,
           school_phone: data.school_info?.phone,
           additional_notes: data.additional_notes,
+        }, {
+          onConflict: 'transcript_id'
         });
 
       if (structuredError) throw structuredError;
@@ -92,6 +102,7 @@ export async function POST(
       if (data.courses && data.courses.length > 0) {
         const coursesData = data.courses.map((course) => ({
           transcript_id: id,
+          user_id: transcript.user_id,
           course_code: course.course_code,
           course_name: course.course_name,
           grade: course.grade,
@@ -118,6 +129,7 @@ export async function POST(
       if (data.test_scores && data.test_scores.length > 0) {
         const testScoresData = data.test_scores.map((test) => ({
           transcript_id: id,
+          user_id: transcript.user_id,
           test_name: test.test_name,
           score: test.score,
           date_taken: test.date_taken,
@@ -137,9 +149,12 @@ export async function POST(
           .from('credit_summary')
           .upsert({
             transcript_id: id,
+            user_id: transcript.user_id,
             total_credits_earned: data.credits.total_credits_earned,
             credits_required: data.credits.credits_required,
             by_subject: data.credits.by_subject,
+          }, {
+            onConflict: 'transcript_id'
           });
 
         if (creditsError) throw creditsError;
@@ -151,10 +166,13 @@ export async function POST(
           .from('attendance_summary')
           .upsert({
             transcript_id: id,
+            user_id: transcript.user_id,
             days_present: data.attendance.days_present,
             days_absent: data.attendance.days_absent,
             total_days: data.attendance.total_days,
             attendance_rate: data.attendance.attendance_rate,
+          }, {
+            onConflict: 'transcript_id'
           });
 
         if (attendanceError) throw attendanceError;
@@ -166,9 +184,12 @@ export async function POST(
           .from('service_hours')
           .upsert({
             transcript_id: id,
+            user_id: transcript.user_id,
             hours_earned: data.service_hours.earned,
             hours_waived: data.service_hours.waived,
             hours_required: data.service_hours.required,
+          }, {
+            onConflict: 'transcript_id'
           });
 
         if (serviceError) throw serviceError;
@@ -192,10 +213,11 @@ export async function POST(
       });
     } catch (dbError) {
       console.error('Database error:', dbError);
+      console.error('Error details:', JSON.stringify(dbError, null, 2));
       return NextResponse.json(
         {
           success: false,
-          error: 'Database error occurred while saving structured data',
+          error: `Database error occurred while saving structured data: ${dbError instanceof Error ? dbError.message : JSON.stringify(dbError)}`,
         },
         { status: 500 }
       );

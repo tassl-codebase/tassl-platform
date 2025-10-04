@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -95,7 +95,6 @@ export default function TranscriptsPage() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('userId', 'user_123'); // Replace with actual user ID from auth
 
       const response = await fetch('/api/transcripts/upload', {
         method: 'POST',
@@ -405,9 +404,8 @@ export default function TranscriptsPage() {
                 </TableHead>
                 <TableBody>
                   {transcripts.map((transcript) => (
-                    <>
+                    <React.Fragment key={transcript.id}>
                       <TableRow
-                        key={transcript.id}
                         sx={{
                           '&:hover': { backgroundColor: 'grey.50' },
                           cursor: 'pointer',
@@ -516,7 +514,7 @@ export default function TranscriptsPage() {
                           </Collapse>
                         </TableCell>
                       </TableRow>
-                    </>
+                    </React.Fragment>
                   ))}
                 </TableBody>
               </Table>

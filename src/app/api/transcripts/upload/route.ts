@@ -1,12 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, TRANSCRIPTS_BUCKET } from '@/lib/supabase';
+import { getCurrentUser, getOrCreateAppUser } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
   try {
+    // Get authenticated user
+    const authUser = await getCurrentUser();
+    if (!authUser) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Get or create app user
+    const userId = await getOrCreateAppUser(authUser);
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const userId = formData.get('userId') as string;
 
     if (!file) {
       return NextResponse.json(
@@ -27,7 +39,7 @@ export async function POST(request: NextRequest) {
     const fileId = uuidv4();
     const fileExtension = 'pdf';
     const fileName = file.name;
-    const storagePath = `${userId || 'anonymous'}/${fileId}.${fileExtension}`;
+    const storagePath = `${userId}/${fileId}.${fileExtension}`;
 
     // Convert file to ArrayBuffer then to Buffer
     const arrayBuffer = await file.arrayBuffer();
@@ -59,7 +71,7 @@ export async function POST(request: NextRequest) {
       .from('transcripts')
       .insert({
         id: fileId,
-        user_id: userId || 'anonymous',
+        user_id: userId,
         file_name: fileName,
         file_path: urlData.publicUrl,
         storage_path: storagePath,
