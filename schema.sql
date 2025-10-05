@@ -232,6 +232,18 @@ COMMENT ON COLUMN "public"."transcripts"."extraction_method" IS 'Method used to 
 
 
 
+COMMENT ON COLUMN "public"."transcripts"."quality_score" IS 'Quality score from 0-100 based on text extraction quality assessment';
+
+
+
+COMMENT ON COLUMN "public"."transcripts"."needs_review" IS 'Flag indicating if the transcript needs manual review due to low quality or OCR extraction';
+
+
+
+COMMENT ON COLUMN "public"."transcripts"."warnings" IS 'Array of warning messages from quality validation (stored as JSONB)';
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."users" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "auth_id" "uuid" NOT NULL,
@@ -349,6 +361,14 @@ CREATE INDEX "idx_structured_transcripts_transcript" ON "public"."structured_tra
 
 
 CREATE INDEX "idx_structured_transcripts_user_id" ON "public"."structured_transcripts" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "idx_transcripts_needs_review" ON "public"."transcripts" USING "btree" ("needs_review") WHERE ("needs_review" = true);
+
+
+
+CREATE INDEX "idx_transcripts_quality_score" ON "public"."transcripts" USING "btree" ("quality_score") WHERE ("quality_score" IS NOT NULL);
 
 
 
