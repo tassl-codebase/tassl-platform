@@ -13,6 +13,7 @@ import {
   Chip,
   Divider,
   LinearProgress,
+  alpha,
 } from '@mui/material';
 import {
   AutoFixHigh,
@@ -235,10 +236,10 @@ export default function TranscriptViewPage() {
                         ? 'OCR Scanned PDF'
                         : transcript.extraction_method === 'text_pdf_ocr_fallback'
                         ? 'Hybrid (Text + OCR)'
-                        : transcript.extraction_method.toUpperCase()
+                        : String(transcript.extraction_method).toUpperCase()
                     }
                     size="small"
-                    color={transcript.extraction_method.startsWith('ocr') || transcript.extraction_method === 'text_pdf_ocr_fallback' ? 'warning' : 'primary'}
+                    color={transcript.extraction_method?.startsWith('ocr') || transcript.extraction_method === 'text_pdf_ocr_fallback' ? 'warning' : 'primary'}
                     variant="outlined"
                     sx={{ fontWeight: 600 }}
                   />
