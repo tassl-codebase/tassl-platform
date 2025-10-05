@@ -16,7 +16,7 @@ export async function GET() {
     // Get user's transcripts with counts by status
     const { data: transcripts, error } = await supabaseAdmin
       .from('transcripts')
-      .select('extraction_status, structured, created_at')
+      .select('extraction_status, structured, created_at, needs_review, quality_score')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -30,6 +30,8 @@ export async function GET() {
     const pending = transcripts?.filter(t => t.extraction_status === 'pending').length || 0;
     const processing = transcripts?.filter(t => t.extraction_status === 'processing').length || 0;
     const failed = transcripts?.filter(t => t.extraction_status === 'failed').length || 0;
+    const needsReview = transcripts?.filter(t => t.needs_review).length || 0;
+    const lowQuality = transcripts?.filter(t => t.quality_score !== null && t.quality_score < 70).length || 0;
 
     // Calculate completion percentage
     const completionRate = total > 0 ? Math.round((structured / total) * 100) : 0;
@@ -65,6 +67,8 @@ export async function GET() {
         pending,
         processing,
         failed,
+        needsReview,
+        lowQuality,
         completionRate,
         recentTranscripts,
         growth: {

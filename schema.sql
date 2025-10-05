@@ -218,6 +218,9 @@ CREATE TABLE IF NOT EXISTS "public"."transcripts" (
     "structure_error" "text",
     "user_id" "uuid",
     "extraction_method" "text",
+    "quality_score" numeric(5,2),
+    "needs_review" boolean DEFAULT false,
+    "warnings" "jsonb",
     CONSTRAINT "transcripts_extraction_status_check" CHECK (("extraction_status" = ANY (ARRAY['pending'::"text", 'processing'::"text", 'completed'::"text", 'failed'::"text"])))
 );
 

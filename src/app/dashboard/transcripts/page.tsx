@@ -499,6 +499,59 @@ export default function TranscriptsPage() {
                                 </Alert>
                               )}
 
+                              {/* Quality Score & Warnings */}
+                              {transcript.quality_score !== null && (
+                                <Box sx={{ mb: 3 }}>
+                                  <Typography variant="h6" fontWeight={600} gutterBottom>
+                                    Quality Assessment
+                                  </Typography>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                    <LinearProgress
+                                      variant="determinate"
+                                      value={transcript.quality_score}
+                                      sx={{
+                                        flex: 1,
+                                        height: 8,
+                                        borderRadius: 4,
+                                        backgroundColor: (theme) => alpha(theme.palette.grey[300], 0.3),
+                                        '& .MuiLinearProgress-bar': {
+                                          backgroundColor: transcript.quality_score >= 70
+                                            ? 'success.main'
+                                            : transcript.quality_score >= 50
+                                            ? 'warning.main'
+                                            : 'error.main',
+                                        },
+                                      }}
+                                    />
+                                    <Chip
+                                      label={`${transcript.quality_score.toFixed(0)}%`}
+                                      color={
+                                        transcript.quality_score >= 70
+                                          ? 'success'
+                                          : transcript.quality_score >= 50
+                                          ? 'warning'
+                                          : 'error'
+                                      }
+                                      size="small"
+                                    />
+                                  </Box>
+                                  {transcript.warnings && transcript.warnings.length > 0 && (
+                                    <Alert severity="warning" sx={{ borderRadius: 3 }}>
+                                      <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                                        Quality Warnings:
+                                      </Typography>
+                                      <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                                        {transcript.warnings.map((warning, idx) => (
+                                          <li key={idx}>
+                                            <Typography variant="body2">{warning}</Typography>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </Alert>
+                                  )}
+                                </Box>
+                              )}
+
                               {transcript.extracted_text && (
                                 <Box sx={{ mb: 3 }}>
                                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -515,10 +568,12 @@ export default function TranscriptsPage() {
                                               ? 'OCR Image'
                                               : transcript.extraction_method === 'ocr_scanned_pdf'
                                               ? 'OCR Scanned PDF'
+                                              : transcript.extraction_method === 'text_pdf_ocr_fallback'
+                                              ? 'Hybrid (Text + OCR)'
                                               : transcript.extraction_method.toUpperCase()
                                           }
                                           size="small"
-                                          color={transcript.extraction_method.startsWith('ocr') ? 'warning' : 'primary'}
+                                          color={transcript.extraction_method.startsWith('ocr') || transcript.extraction_method === 'text_pdf_ocr_fallback' ? 'warning' : 'primary'}
                                           variant="outlined"
                                         />
                                       )}

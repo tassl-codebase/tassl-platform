@@ -7,9 +7,12 @@ export interface Transcript {
   extracted_text: string | null;
   page_count: number | null;
   extraction_status: 'pending' | 'processing' | 'completed' | 'failed';
-  extraction_method: string | null;
+  extraction_method: 'text_pdf' | 'ocr_scanned_pdf' | 'ocr_image' | 'text_pdf_ocr_fallback' | null;
   extraction_error: string | null;
   extracted_at: string | null;
+  quality_score: number | null;
+  needs_review: boolean | null;
+  warnings: string[] | null;
   structured: boolean;
   structured_at: string | null;
   structure_error: string | null;

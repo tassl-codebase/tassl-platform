@@ -19,6 +19,7 @@ import {
   TrendingUp as TrendingUpIcon,
   ArrowForward as ArrowForwardIcon,
   Refresh as RefreshIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 
 interface DashboardStats {
@@ -28,6 +29,8 @@ interface DashboardStats {
   pending: number;
   processing: number;
   failed: number;
+  needsReview: number;
+  lowQuality: number;
   completionRate: number;
   recentTranscripts: number;
   growth: {
@@ -99,6 +102,15 @@ export default function DashboardPage() {
       bgColor: '#fffbeb',
       trend: 0,
     },
+    {
+      title: 'Needs Review',
+      value: stats.needsReview.toString(),
+      change: stats.lowQuality > 0 ? `${stats.lowQuality} low quality` : 'All good',
+      icon: <WarningIcon sx={{ fontSize: 28 }} />,
+      gradient: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+      bgColor: '#fef2f2',
+      trend: -stats.needsReview,
+    },
   ] : [];
 
   return (
@@ -129,10 +141,10 @@ export default function DashboardPage() {
       </Box>
 
       {/* Stats Cards */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3, mb: 5 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 3, mb: 5 }}>
         {loading ? (
           // Loading skeletons
-          [1, 2, 3].map((i) => (
+          [1, 2, 3, 4].map((i) => (
             <Card key={i} sx={{ border: '1px solid', borderColor: 'grey.200' }}>
               <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>

@@ -7,7 +7,10 @@ export interface ExtractResponse {
   text: string | null;
   error: string | null;
   page_count: number | null;
-  extraction_method?: string | null;
+  extraction_method?: 'text_pdf' | 'ocr_scanned_pdf' | 'ocr_image' | 'text_pdf_ocr_fallback' | null;
+  quality_score?: number | null;
+  needs_review?: boolean | null;
+  warnings?: string[] | null;
 }
 
 export async function extractTextFromSupabase(
@@ -39,6 +42,9 @@ export async function extractTextFromSupabase(
       error: result.error,
       page_count: result.data?.page_count || null,
       extraction_method: result.data?.extraction_method || null,
+      quality_score: result.data?.quality_score || null,
+      needs_review: result.data?.needs_review || null,
+      warnings: result.data?.warnings || null,
     };
   } catch (error) {
     return {

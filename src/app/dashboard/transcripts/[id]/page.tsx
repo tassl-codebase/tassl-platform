@@ -22,6 +22,7 @@ import {
   Pending,
   ContentCopy,
   AccountTree,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import type { Transcript } from '@/types/transcript';
 import type { CombinedStructuredData } from '@/types/structured-transcript';
@@ -232,14 +233,60 @@ export default function TranscriptViewPage() {
                         ? 'OCR Image'
                         : transcript.extraction_method === 'ocr_scanned_pdf'
                         ? 'OCR Scanned PDF'
+                        : transcript.extraction_method === 'text_pdf_ocr_fallback'
+                        ? 'Hybrid (Text + OCR)'
                         : transcript.extraction_method.toUpperCase()
                     }
                     size="small"
-                    color={transcript.extraction_method.startsWith('ocr') ? 'warning' : 'primary'}
+                    color={transcript.extraction_method.startsWith('ocr') || transcript.extraction_method === 'text_pdf_ocr_fallback' ? 'warning' : 'primary'}
                     variant="outlined"
                     sx={{ fontWeight: 600 }}
                   />
                 </Box>
+              </>
+            )}
+
+            {transcript.quality_score !== null && (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  Quality Score:
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={transcript.quality_score}
+                    sx={{
+                      width: 200,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: (theme) => alpha(theme.palette.grey[300], 0.3),
+                      '& .MuiLinearProgress-bar': {
+                        backgroundColor: transcript.quality_score >= 70
+                          ? 'success.main'
+                          : transcript.quality_score >= 50
+                          ? 'warning.main'
+                          : 'error.main',
+                      },
+                    }}
+                  />
+                  <Typography variant="body2" fontWeight={600}>
+                    {transcript.quality_score.toFixed(0)}%
+                  </Typography>
+                </Box>
+              </>
+            )}
+
+            {transcript.needs_review && (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  Review Status:
+                </Typography>
+                <Chip
+                  label="Needs Review"
+                  color="warning"
+                  size="small"
+                  icon={<WarningIcon />}
+                />
               </>
             )}
           </Box>
@@ -251,6 +298,22 @@ export default function TranscriptViewPage() {
         {transcript.extraction_method && transcript.extraction_method.startsWith('ocr') && (
           <Alert severity="warning" sx={{ mb: 3 }}>
             ⚠️ This transcript was extracted using OCR. Please review manually for accuracy.
+          </Alert>
+        )}
+
+        {/* Quality Warnings */}
+        {transcript.warnings && transcript.warnings.length > 0 && (
+          <Alert severity="info" sx={{ mb: 3 }}>
+            <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+              Quality Warnings:
+            </Typography>
+            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              {transcript.warnings.map((warning, idx) => (
+                <li key={idx}>
+                  <Typography variant="body2">{warning}</Typography>
+                </li>
+              ))}
+            </ul>
           </Alert>
         )}
 
