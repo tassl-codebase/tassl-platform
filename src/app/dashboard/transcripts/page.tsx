@@ -35,6 +35,7 @@ import {
 import type { Transcript } from '@/types/transcript';
 import StructuredDataDisplay from '@/components/StructuredDataDisplay';
 import type { CombinedStructuredData } from '@/types/structured-transcript';
+import PageContainer from '@/components/layout/PageContainer';
 
 export default function TranscriptsPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -216,7 +217,7 @@ export default function TranscriptsPage() {
   };
 
   return (
-    <Box>
+    <PageContainer>
       <Typography variant="h3" fontWeight="800" gutterBottom sx={{ letterSpacing: '-0.5px' }}>
         Transcripts
       </Typography>
@@ -234,14 +235,14 @@ export default function TranscriptsPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <Box
               sx={{
-                background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
+                background: 'linear-gradient(135deg, #2C3E5D 0%, #5B8FB9 100%)', // Dark blue gradient
                 borderRadius: 3,
                 p: 1.5,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'white',
-                boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.4)',
+                boxShadow: '0 4px 14px 0 rgba(44, 62, 93, 0.4)',
               }}
             >
               <DescriptionIcon sx={{ fontSize: 28 }} />
@@ -371,11 +372,11 @@ export default function TranscriptsPage() {
               py: 1.75,
               fontSize: '1rem',
               fontWeight: 600,
-              background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-              boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.4)',
+              background: 'linear-gradient(135deg, #14B8A6 0%, #2DD4BF 100%)', // Teal gradient
+              boxShadow: '0 4px 14px 0 rgba(20, 184, 166, 0.4)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
-                boxShadow: '0 6px 20px 0 rgba(99, 102, 241, 0.5)',
+                background: 'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)',
+                boxShadow: '0 6px 20px 0 rgba(20, 184, 166, 0.5)',
               },
               '&:disabled': {
                 background: 'grey.300',
@@ -463,7 +464,10 @@ export default function TranscriptsPage() {
                                 disabled={structuring === transcript.id}
                                 startIcon={structuring === transcript.id ? <CircularProgress size={16} color="inherit" /> : <AutoAwesomeIcon />}
                                 sx={{
-                                  background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
+                                  background: 'linear-gradient(135deg, #14B8A6 0%, #2DD4BF 100%)', // Teal gradient
+                                  '&:hover': {
+                                    background: 'linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)',
+                                  },
                                 }}
                               >
                                 {structuring === transcript.id ? 'Processing...' : 'Structure Data'}
@@ -629,6 +633,6 @@ export default function TranscriptsPage() {
           </Typography>
         </Card>
       )}
-    </Box>
+    </PageContainer>
   );
 }

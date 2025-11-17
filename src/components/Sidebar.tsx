@@ -3,29 +3,26 @@
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Box,
-  Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Typography,
-  Divider,
-  IconButton,
   Avatar,
-  alpha,
+  Link as MuiLink,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   Description as DescriptionIcon,
   Logout as LogoutIcon,
-  Menu as MenuIcon,
-  School as SchoolIcon,
 } from '@mui/icons-material';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
+import Link from 'next/link';
 
-const DRAWER_WIDTH = 280;
+const DRAWER_WIDTH_COLLAPSED = 96; // 24 * 4 = 96px
+const DRAWER_WIDTH_EXPANDED = 256; // w-64
 
 interface SidebarProps {
   userEmail?: string | null;
@@ -34,11 +31,8 @@ interface SidebarProps {
 export default function Sidebar({ userEmail }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -47,247 +41,188 @@ export default function Sidebar({ userEmail }: SidebarProps) {
 
   const menuItems = [
     {
-      text: 'Dashboard Home',
-      icon: <DashboardIcon />,
+      id: 'dashboard',
+      text: 'Dashboard',
+      icon: <DashboardIcon sx={{ fontSize: 24 }} />,
       path: '/dashboard',
     },
     {
+      id: 'transcripts',
       text: 'Transcripts',
-      icon: <DescriptionIcon />,
+      icon: <DescriptionIcon sx={{ fontSize: 24 }} />,
       path: '/dashboard/transcripts',
     },
   ];
 
-  const drawerContent = (
+  return (
     <Box
+      component="aside"
+      onMouseEnter={() => setIsExpanded(true)}
+      onMouseLeave={() => setIsExpanded(false)}
       sx={{
-        height: '100%',
-        display: 'flex',
+        bgcolor: '#2C3E5D', // Dark blue background
+        height: '100vh',
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        display: { xs: 'none', sm: 'flex' }, // Hide on mobile
         flexDirection: 'column',
-        background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)',
+        alignItems: 'center',
+        py: 3,
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        width: isExpanded ? `${DRAWER_WIDTH_EXPANDED}px` : `${DRAWER_WIDTH_COLLAPSED}px`,
+        transition: 'width 300ms ease-in-out',
       }}
     >
-      {/* Header */}
-      <Box sx={{ p: 3, pb: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-          <Avatar
-            sx={{
-              bgcolor: 'primary.main',
-              width: 44,
-              height: 44,
-              background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-              boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.4)',
-            }}
-          >
-            <SchoolIcon />
-          </Avatar>
-          <Box>
-            <Typography variant="h6" fontWeight="bold" color="primary.dark">
-              TASSL
-            </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
-              Transcript Platform
-            </Typography>
-          </Box>
-        </Box>
+      {/* Logo Section */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          mb: 4,
+          width: '100%',
+          px: isExpanded ? 3 : 0,
+          justifyContent: isExpanded ? 'flex-start' : 'center',
+          transition: 'all 300ms ease-in-out',
+        }}
+      >
+        <Link href="/dashboard" passHref legacyBehavior>
+          <MuiLink sx={{ textDecoration: 'none' }}>
+            <Avatar
+              sx={{
+                width: 48,
+                height: 48,
+                background: 'linear-gradient(135deg, #2DD4BF 0%, #14B8A6 100%)', // Teal gradient
+                flexShrink: 0,
+                cursor: 'pointer',
+                '&:hover': {
+                  opacity: 0.9,
+                },
+              }}
+            >
+              <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '0.875rem' }}>
+                T
+              </Typography>
+            </Avatar>
+          </MuiLink>
+        </Link>
+        <Typography
+          sx={{
+            color: 'white',
+            fontWeight: 600,
+            fontSize: '1.125rem',
+            whiteSpace: 'nowrap',
+            opacity: isExpanded ? 1 : 0,
+            width: isExpanded ? 'auto' : 0,
+            overflow: 'hidden',
+            transition: 'all 300ms ease-in-out',
+          }}
+        >
+          Tassl.AI
+        </Typography>
       </Box>
 
-      <Divider sx={{ opacity: 0.6 }} />
-
-      {/* Navigation */}
-      <List sx={{ flex: 1, px: 2.5, py: 3 }}>
+      {/* Menu Items */}
+      <List
+        component="nav"
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          width: '100%',
+          px: 1.5,
+        }}
+      >
         {menuItems.map((item) => {
           const isActive = pathname === item.path;
+          const isHovered = hoveredItem === item.id;
+          const shouldHighlight = hoveredItem ? isHovered : isActive;
+
           return (
-            <ListItem key={item.path} disablePadding sx={{ mb: 1 }}>
-              <ListItemButton
-                onClick={() => {
-                  router.push(item.path);
-                  setMobileOpen(false);
-                }}
-                selected={isActive}
-                sx={{
-                  borderRadius: 3,
-                  py: 1.5,
-                  px: 2,
-                  transition: 'all 0.2s ease-in-out',
-                  '&.Mui-selected': {
-                    background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-                    color: 'white',
-                    boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.4)',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
-                      boxShadow: '0 6px 20px 0 rgba(99, 102, 241, 0.5)',
-                    },
-                    '& .MuiListItemIcon-root': {
-                      color: 'white',
-                    },
-                  },
-                  '&:hover': {
-                    backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                    transform: 'translateX(4px)',
-                  },
-                }}
-              >
-                <ListItemIcon
+            <ListItem key={item.id} disablePadding>
+              <Link href={item.path} passHref legacyBehavior style={{ width: '100%' }}>
+                <ListItemButton
+                  onMouseEnter={() => setHoveredItem(item.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
                   sx={{
-                    color: isActive ? 'white' : 'text.secondary',
-                    minWidth: 42,
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 2,
+                    height: 64,
+                    gap: isExpanded ? 2 : 0,
+                    justifyContent: isExpanded ? 'flex-start' : 'center',
+                    px: isExpanded ? 2 : 0,
+                    transition: 'all 200ms ease-in-out',
+                    bgcolor: shouldHighlight ? '#5B8FB9' : 'transparent', // Blue active/hover state
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: '#5B8FB9',
+                    },
                   }}
+                  title={item.text}
                 >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{
-                    fontWeight: isActive ? 600 : 500,
-                    fontSize: '0.95rem',
-                  }}
-                />
-              </ListItemButton>
+                  <ListItemIcon
+                    sx={{
+                      color: 'white',
+                      minWidth: 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      sx: {
+                        whiteSpace: 'nowrap',
+                        opacity: isExpanded ? 1 : 0,
+                        width: isExpanded ? 'auto' : 0,
+                        overflow: 'hidden',
+                        transition: 'all 300ms ease-in-out',
+                        fontWeight: 500,
+                      },
+                    }}
+                  />
+                </ListItemButton>
+              </Link>
             </ListItem>
           );
         })}
       </List>
 
-      <Divider sx={{ opacity: 0.6 }} />
-
-      {/* User Info & Logout */}
-      <Box sx={{ p: 2.5 }}>
-        {userEmail && (
-          <Box
+      {/* Logout Button - Only show when expanded */}
+      {isExpanded && userEmail && (
+        <Box sx={{ width: '100%', px: 1.5, pb: 2 }}>
+          <ListItemButton
+            onClick={handleLogout}
             sx={{
-              backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08),
-              borderRadius: 3,
-              p: 2,
-              mb: 1.5,
-              border: '1px solid',
-              borderColor: (theme) => alpha(theme.palette.primary.main, 0.2),
+              borderRadius: 2,
+              py: 1.5,
+              px: 2,
+              color: 'white',
+              transition: 'all 200ms ease-in-out',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+              },
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Avatar
-                sx={{
-                  bgcolor: 'primary.main',
-                  width: 36,
-                  height: 36,
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                }}
-              >
-                {userEmail.charAt(0).toUpperCase()}
-              </Avatar>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                  Signed in as
-                </Typography>
-                <Typography
-                  variant="body2"
-                  fontWeight={500}
-                  color="text.primary"
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    fontSize: '0.85rem',
-                  }}
-                >
-                  {userEmail}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        )}
-        <ListItemButton
-          onClick={handleLogout}
-          sx={{
-            borderRadius: 3,
-            py: 1.5,
-            px: 2,
-            color: 'error.main',
-            transition: 'all 0.2s ease-in-out',
-            '&:hover': {
-              backgroundColor: (theme) => alpha(theme.palette.error.main, 0.1),
-              transform: 'translateX(4px)',
-            },
-          }}
-        >
-          <ListItemIcon sx={{ color: 'inherit', minWidth: 42 }}>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary="Logout"
-            primaryTypographyProps={{
-              fontWeight: 500,
-              fontSize: '0.95rem',
-            }}
-          />
-        </ListItemButton>
-      </Box>
-    </Box>
-  );
-
-  return (
-    <Box>
-      {/* Mobile Menu Button */}
-      <IconButton
-        color="inherit"
-        aria-label="open drawer"
-        edge="start"
-        onClick={handleDrawerToggle}
-        sx={{
-          position: 'fixed',
-          top: 16,
-          left: 16,
-          zIndex: 1300,
-          display: { sm: 'none' },
-          backgroundColor: 'primary.main',
-          color: 'white',
-          boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.4)',
-          '&:hover': {
-            backgroundColor: 'primary.dark',
-            boxShadow: '0 6px 20px 0 rgba(99, 102, 241, 0.5)',
-          },
-        }}
-      >
-        <MenuIcon />
-      </IconButton>
-
-      {/* Mobile Drawer */}
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true, // Better mobile performance
-        }}
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: DRAWER_WIDTH,
-          },
-        }}
-      >
-        {drawerContent}
-      </Drawer>
-
-      {/* Desktop Drawer */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: DRAWER_WIDTH,
-          },
-        }}
-        open
-      >
-        {drawerContent}
-      </Drawer>
+            <ListItemIcon sx={{ color: 'white', minWidth: 42 }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Logout"
+              primaryTypographyProps={{
+                fontWeight: 500,
+                fontSize: '0.95rem',
+              }}
+            />
+          </ListItemButton>
+        </Box>
+      )}
     </Box>
   );
 }
 
-export { DRAWER_WIDTH };
+export { DRAWER_WIDTH_COLLAPSED, DRAWER_WIDTH_EXPANDED };
