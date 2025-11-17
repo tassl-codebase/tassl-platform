@@ -1,28 +1,28 @@
 import { createTheme } from '@mui/material/styles';
 
-// Modern color palette
+// Modern color palette - Updated to match tassl-frontend design
 const colors = {
   primary: {
-    main: '#6366f1', // Indigo
-    light: '#818cf8',
-    dark: '#4f46e5',
+    main: '#2C3E5D', // Dark blue (sidebar/primary buttons)
+    light: '#5B8FB9', // Blue hover state
+    dark: '#1E2A3D', // Darker blue
     contrastText: '#ffffff',
   },
   secondary: {
-    main: '#ec4899', // Pink
-    light: '#f472b6',
-    dark: '#db2777',
+    main: '#14B8A6', // Teal (accents/progress)
+    light: '#2DD4BF', // Light teal
+    dark: '#0F766E', // Dark teal
     contrastText: '#ffffff',
   },
   background: {
-    default: '#f8fafc',
-    paper: '#ffffff',
-    dark: '#0f172a',
+    default: '#F9FAFB', // Gray-50 (page background)
+    paper: '#FFFFFF',
+    dark: '#111827',
   },
   text: {
-    primary: '#1e293b',
-    secondary: '#64748b',
-    disabled: '#94a3b8',
+    primary: '#111827', // Gray-900
+    secondary: '#4B5563', // Gray-600
+    disabled: '#9CA3AF', // Gray-400
   },
   success: {
     main: '#10b981',
@@ -30,9 +30,9 @@ const colors = {
     dark: '#059669',
   },
   warning: {
-    main: '#f59e0b',
-    light: '#fbbf24',
-    dark: '#d97706',
+    main: '#F59E0B', // Orange (flags)
+    light: '#FBB023',
+    dark: '#D97706',
   },
   error: {
     main: '#ef4444',
@@ -45,16 +45,16 @@ const colors = {
     dark: '#2563eb',
   },
   grey: {
-    50: '#f8fafc',
-    100: '#f1f5f9',
-    200: '#e2e8f0',
-    300: '#cbd5e1',
-    400: '#94a3b8',
-    500: '#64748b',
-    600: '#475569',
-    700: '#334155',
-    800: '#1e293b',
-    900: '#0f172a',
+    50: '#F9FAFB',
+    100: '#F3F4F6',
+    200: '#E5E7EB',
+    300: '#D1D5DB',
+    400: '#9CA3AF',
+    500: '#6B7280',
+    600: '#4B5563',
+    700: '#374151',
+    800: '#1F2937',
+    900: '#111827',
   },
 };
 
@@ -150,8 +150,8 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
-          padding: '10px 24px',
+          borderRadius: 8, // rounded-lg
+          padding: '12px 32px', // py-3 px-8
           fontSize: '0.95rem',
           boxShadow: 'none',
           '&:hover': {
@@ -167,13 +167,17 @@ const theme = createTheme({
           padding: '12px 32px',
           fontSize: '1rem',
         },
+        sizeSmall: {
+          padding: '12px 16px', // py-3 px-4
+          fontSize: '0.875rem',
+        },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+          borderRadius: 12, // rounded-xl
+          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)', // shadow-sm
           border: '1px solid',
           borderColor: colors.grey[200],
         },
@@ -182,7 +186,7 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
+          borderRadius: 12, // rounded-xl
         },
         elevation1: {
           boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
@@ -199,7 +203,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: 10,
+            borderRadius: 8, // rounded-lg
           },
         },
       },

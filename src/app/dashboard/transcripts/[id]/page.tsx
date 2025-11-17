@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import {
   Box,
   Button,
-  Container,
   Typography,
   Paper,
   Alert,
@@ -28,6 +27,7 @@ import {
 import type { Transcript } from '@/types/transcript';
 import type { CombinedStructuredData } from '@/types/structured-transcript';
 import StructuredDataDisplay from '@/components/StructuredDataDisplay';
+import PageContainer from '@/components/layout/PageContainer';
 
 export default function TranscriptViewPage() {
   const params = useParams();
@@ -150,24 +150,26 @@ export default function TranscriptViewPage() {
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
-        <CircularProgress />
-        <Typography sx={{ mt: 2 }}>Loading transcript...</Typography>
-      </Container>
+      <PageContainer>
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <CircularProgress />
+          <Typography sx={{ mt: 2 }}>Loading transcript...</Typography>
+        </Box>
+      </PageContainer>
     );
   }
 
   if (!transcript) {
     return (
-      <Container maxWidth="lg" sx={{ py: 8 }}>
+      <PageContainer>
         <Alert severity="error">Transcript not found</Alert>
-      </Container>
+      </PageContainer>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
+    <PageContainer>
+      <Paper elevation={2} sx={{ p: 4, maxWidth: 1200 }}>
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
           <Description sx={{ fontSize: 40, color: 'primary.main' }} />
@@ -427,6 +429,6 @@ export default function TranscriptViewPage() {
           <StructuredDataDisplay data={structuredData} />
         )}
       </Paper>
-    </Container>
+    </PageContainer>
   );
 }

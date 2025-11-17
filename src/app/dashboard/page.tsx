@@ -21,6 +21,7 @@ import {
   Refresh as RefreshIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+import PageContainer from '@/components/layout/PageContainer';
 
 interface DashboardStats {
   total: number;
@@ -80,8 +81,8 @@ export default function DashboardPage() {
       value: stats.total.toString(),
       change: formatChange(stats.growth.total),
       icon: <DescriptionIcon sx={{ fontSize: 28 }} />,
-      gradient: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-      bgColor: '#eef2ff',
+      gradient: 'linear-gradient(135deg, #2C3E5D 0%, #5B8FB9 100%)', // Dark blue gradient
+      bgColor: '#E0E7ED',
       trend: stats.growth.total,
     },
     {
@@ -89,7 +90,7 @@ export default function DashboardPage() {
       value: stats.completed.toString(),
       change: formatChange(stats.growth.completed),
       icon: <AnalyticsIcon sx={{ fontSize: 28 }} />,
-      gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+      gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)', // Keep green
       bgColor: '#ecfdf5',
       trend: stats.growth.completed,
     },
@@ -98,7 +99,7 @@ export default function DashboardPage() {
       value: (stats.pending + stats.processing).toString(),
       change: stats.processing > 0 ? `${stats.processing} processing` : 'Ready',
       icon: <TrendingUpIcon sx={{ fontSize: 28 }} />,
-      gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+      gradient: 'linear-gradient(135deg, #F59E0B 0%, #FBB023 100%)', // Orange
       bgColor: '#fffbeb',
       trend: 0,
     },
@@ -107,14 +108,14 @@ export default function DashboardPage() {
       value: stats.needsReview.toString(),
       change: stats.lowQuality > 0 ? `${stats.lowQuality} low quality` : 'All good',
       icon: <WarningIcon sx={{ fontSize: 28 }} />,
-      gradient: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+      gradient: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)', // Keep red
       bgColor: '#fef2f2',
       trend: -stats.needsReview,
     },
   ] : [];
 
   return (
-    <Box>
+    <PageContainer>
       {/* Header */}
       <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
         <Box>
@@ -217,7 +218,7 @@ export default function DashboardPage() {
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
         <Card
           sx={{
-            background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
+            background: 'linear-gradient(135deg, #14B8A6 0%, #2DD4BF 100%)', // Teal gradient
             color: 'white',
             border: 'none',
           }}
@@ -387,7 +388,7 @@ export default function DashboardPage() {
                     width: 48,
                     height: 48,
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
+                    background: 'linear-gradient(135deg, #2C3E5D 0%, #5B8FB9 100%)', // Dark blue gradient
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
@@ -396,7 +397,7 @@ export default function DashboardPage() {
                     fontSize: '1.25rem',
                     margin: '0 auto',
                     mb: 2,
-                    boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.4)',
+                    boxShadow: '0 4px 14px 0 rgba(44, 62, 93, 0.4)',
                   }}
                 >
                   {item.step}
@@ -412,6 +413,6 @@ export default function DashboardPage() {
           </Box>
         </CardContent>
       </Card>
-    </Box>
+    </PageContainer>
   );
 }
