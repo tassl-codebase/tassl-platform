@@ -105,8 +105,8 @@ export default function LoginPage() {
                   height: 72,
                   margin: '0 auto',
                   mb: 2,
-                  background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-                  boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)',
+                  background: 'linear-gradient(135deg, #14B8A6 0%, #2DD4BF 100%)', // Teal gradient
+                  boxShadow: '0 8px 24px rgba(20, 184, 166, 0.4)',
                 }}
               >
                 <SchoolIcon sx={{ fontSize: 40 }} />
@@ -191,11 +191,11 @@ export default function LoginPage() {
                   py: 1.75,
                   fontSize: '1rem',
                   fontWeight: 600,
-                  background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-                  boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.4)',
+                  background: 'linear-gradient(135deg, #2C3E5D 0%, #5B8FB9 100%)', // Dark blue gradient
+                  boxShadow: '0 4px 14px 0 rgba(44, 62, 93, 0.4)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
-                    boxShadow: '0 6px 20px 0 rgba(99, 102, 241, 0.5)',
+                    background: 'linear-gradient(135deg, #1E2A3D 0%, #2C3E5D 100%)',
+                    boxShadow: '0 6px 20px 0 rgba(44, 62, 93, 0.5)',
                   },
                   '&:disabled': {
                     background: 'grey.300',
